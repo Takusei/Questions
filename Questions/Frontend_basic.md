@@ -193,3 +193,165 @@ localStorage：localStorage 在所有同源窗口中都是共享的；cookie 也
 搜索引擎无法解读这种页面，不利于SEO
 iframe 和主页面共享连接池，而浏览器对相同区域有限制所以会影响性能。
 ```
+
+### Q: Doctype?
+```
+Tell browser use which method to read the document, there are 2 types:
+stands-mode, quirks-mode
+```
+
+### Q: XSS attack?
+```
+Cross Site Scripting
+XSS 攻击指的是跨站脚本攻击，是一种代码注入攻击。攻击者通过在网站注入恶意脚本，使之在用户的浏览器上运行，从而盗取用户的信息如 cookie 等。
+
+XSS 的本质是因为网站没有对恶意代码进行过滤，与正常的代码混合在一起了，浏览器没有办法分辨哪些脚本是可信的，从而导致了恶意代码的执行。
+
+XSS 一般分为存储型、反射型和 DOM 型。
+
+Stored XSS 
+存储型指的是恶意代码提交到了网站的数据库中，当用户请求数据的时候，服务器将其拼接为 HTML 后返回给了用户，从而导致了恶意代码的执行。
+
+Reflected XSS
+反射型指的是攻击者构建了特殊的 URL，当服务器接收到请求后，从 URL 中获取数据，拼接到 HTML 后返回，从而导致了恶意代码的执行。
+
+DOM Based XSS
+DOM 型指的是攻击者构建了特殊的 URL，用户打开网站后，js 脚本从 URL 中获取数据，从而导致了恶意代码的执行。
+
+XSS 攻击的预防可以从两个方面入手，一个是恶意代码提交的时候，一个是浏览器执行恶意代码的时候。
+
+对于第一个方面，如果我们对存入数据库的数据都进行的转义处理，但是一个数据可能在多个地方使用，有的地方可能不需要转义，由于我们没有办法判断数据最后的使用场景，所以直接在输入端进行恶意代码的处理，其实是不太可靠的。
+
+因此我们可以从浏览器的执行来进行预防，一种是使用纯前端的方式，不用服务器端拼接后返回。另一种是对需要插入到 HTML 中的代码做好充分的转义。对于 DOM 型的攻击，主要是前端脚本的不可靠而造成的，我们对于数据获取渲染和字符串拼接的时候应该对可能出现的恶意代码情况进行判断。
+
+还有一些方式，比如使用 CSP ，CSP 的本质是建立一个白名单，告诉浏览器哪些外部资源可以加载和执行，从而防止恶意代码的注入攻击。
+
+还可以对一些敏感信息进行保护，比如 cookie 使用 http-only ，使得脚本无法获取。也可以使用验证码，避免脚本伪装成用户执行一些操作。
+
+```
+### Q: CSP?
+```
+Content-Security-Policy
+CSP 指的是内容安全策略，它的本质是建立一个白名单，告诉浏览器哪些外部资源可以加载和执行。
+我们只需要配置规则，如何拦截由浏览器自己来实现。
+
+通常有两种方式来开启 CSP，一种是设置 HTTP 首部中的 Content-Security-Policy，
+一种是设置 meta 标签的方式 <metahttp-equiv="Content-Security-Policy">
+```
+
+
+### Q: CSRF attack?
+```
+Cross-site request forgery
+是一种挟制用户在当前已登录的Web应用程序上执行非本意的操作的攻击方法。跟跨网站脚本（XSS）相比，XSS利用的是用户对指定网站的信任，CSRF利用的是网站对用户网页浏览器的信任
+
+CSRF 攻击指的是跨站请求伪造攻击，攻击者诱导用户进入一个第三方网站，然后该网站向被攻击网站发送跨站请求。
+如果用户在被攻击网站中保存了登录状态，那么攻击者就可以利用这个登录状态，绕过后台的用户验证，冒充用户向服务器执行一些操作。
+
+CSRF 攻击的本质是利用了 cookie 会在同源请求中携带发送给服务器的特点，以此来实现用户的冒充。
+
+一般的 CSRF 攻击类型有三种：
+
+第一种是 GET 类型的 CSRF 攻击，比如在网站中的一个 img 标签里构建一个请求，当用户打开这个网站的时候就会自动发起提
+交。
+
+第二种是 POST 类型的 CSRF 攻击，比如说构建一个表单，然后隐藏它，当用户进入页面时，自动提交这个表单。
+
+第三种是链接类型的 CSRF 攻击，比如说在 a 标签的 href 属性里构建一个请求，然后诱导用户去点击。
+
+CSRF 可以用下面几种方法来防护：
+
+第一种是同源检测的方法，服务器根据 http 请求头中 origin 或者 referer 信息来判断请求是否为允许访问的站点，从而对请求进行过滤。当 origin 或者 referer 信息都不存在的时候，直接阻止。这种方式的缺点是有些情况下 referer 可以被伪造。还有就是我们这种方法同时把搜索引擎的链接也给屏蔽了，所以一般网站会允许搜索引擎的页面请求，但是相应的页面请求这种请求方式也可能被攻击者给利用。
+
+第二种方法是使用 CSRF Token 来进行验证，服务器向用户返回一个随机数 Token ，当网站再次发起请求时，在请求参数中加入服务器端返回的 token ，然后服务器对这个 token 进行验证。这种方法解决了使用 cookie 单一验证方式时，可能会被冒用的问题，但是这种方法存在一个缺点就是，我们需要给网站中的所有请求都添加上这个 token，操作比较繁琐。还有一个问题是一般不会只有一台网站服务器，如果我们的请求经过负载平衡转移到了其他的服务器，但是这个服务器的 session 中没有保留这个 token 的话，就没有办法验证了。这种情况我们可以通过改变 token 的构建方式来解决。
+
+第三种方式使用双重 Cookie 验证的办法，服务器在用户访问网站页面时，向请求域名注入一个Cookie，内容为随机字符串，然后当用户再次向服务器发送请求的时候，从 cookie 中取出这个字符串，添加到 URL 参数中，然后服务器通过对 cookie 中的数据和参数中的数据进行比较，来进行验证。使用这种方式是利用了攻击者只能利用 cookie，但是不能访问获取 cookie 的特点。并且这种方法比 CSRF Token 的方法更加方便，并且不涉及到分布式访问的问题。这种方法的缺点是如果网站存在 XSS 漏洞的，那么这种方式会失效。同时这种方式不能做到子域名的隔离。
+
+第四种方式是使用在设置 cookie 属性的时候设置 Samesite ，限制 cookie 不能作为被第三方使用，从而可以避免被攻击者利用。Samesite 一共有两种模式，一种是严格模式，在严格模式下 cookie 在任何情况下都不可能作为第三方 Cookie 使用，在宽松模式下，cookie 可以被请求是 GET 请求，且会发生页面跳转的请求所使用。
+```
+
+### Q: Samesite cookie?
+```
+Samesite Cookie 表示同站 cookie，避免 cookie 被第三方所利用。
+
+将 Samesite 设为 strict ，这种称为严格模式，表示这个 cookie 在任何情况下都不可能作为第三方 cookie。
+
+将 Samesite 设为 Lax ，这种模式称为宽松模式，如果这个请求是个 GET 请求
+，并且这个请求改变了当前页面或者打开了新的页面，那么这个 cookie 可以作为第三方 cookie，其余情况下都不能作为第三方 cookie。
+
+使用这种方法的缺点是，因为它不支持子域，所以子域没有办法与主域共享登录信息，每次转入子域的网站，都回重新登录。
+还有一个问题就是它的兼容性不够好。
+
+```
+
+### Q. 强缓存 协商缓存
+```
+强缓存 从缓存取  200（from cache） 直接从缓存取
+协商缓存 从缓存取 304（not modified） 通过服务器来告知缓存是否可用
+
+强缓存相关字段有expires，cache-control。如果cache-control 与expires 同时存在的话，
+cache-control 的优先级高于expires。
+
+协商缓存相关字段有Last-Modified/If-Modified-Since，Etag/If-None-Match
+```
+
+
+### Q. GET vs. POST
+```
+get 参数通过url 传递，post 放在request body 中。
+
+get 请求在url 中传递的参数是有长度限制的，而post 没有。
+
+get 比post 更不安全，因为参数直接暴露在url 中，所以不能用来传递敏感信息。
+
+get 请求只能进行url 编码，而post 支持多种编码方式
+
+get 请求会浏览器主动cache，而post 支持多种编码方式。
+
+get 请求参数会被完整保留在浏览历史记录里，而post 中的参数不会被保留。
+
+GET 和POST 本质上就是TCP 链接，并无差别。但是由于HTTP 的规定和浏览器/服务器
+的限制，导致他们在应用过程中体现出一些不同。
+
+GET 产生一个TCP 数据包；POST 产生两个TCP 数据包。
+对于GET 方式的请求，浏览器会把http header 和data 一并发送出去，服务器响应200
+（返回数据）；
+而对于POST，浏览器先发送header，服务器响应100 continue，浏览器再发送data，服
+务器响应200 ok（返回数据）
+
+```
+
+### Q. HTTP methods?
+```
+GET, POST, HEAD, OPTIONS, PUT, DELETE, TRACE, CONNECT
+```
+
+### Q. What will happen when you input url in the browser?
+```
+1. Find DNS
+ - can from browser cache, system cache, router cache and etc.
+
+2. Go to the ip to get content
+
+3. Use return html to build DOM, CSSOM
+
+4. Show to user
+
+DNS 解析
+TCP 连接
+发送HTTP 请求
+服务器处理请求并返回HTTP 报文
+浏览器解析渲染页面
+连接结束
+```
+
+### Q. web 性能优化
+```
+降低请求量：合并资源，减少HTTP 请求数，minify / gzip 压缩，webP，lazyLoad。
+
+加快请求速度：预解析DNS，减少域名数，并行加载，CDN 分发。
+
+缓存：HTTP 协议缓存请求，离线缓存manifest，离线数据缓存localStorage。
+
+渲染：JS/CSS 优化，加载顺序，服务端渲染，pipeline。
+```
