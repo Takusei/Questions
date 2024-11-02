@@ -291,3 +291,24 @@ Media queries allow us to run a series of tests
   /* CSS rules go here */
 }
 ```
+
+### 如何实现元素的垂直居中
+```
+父元素固定宽高，子元素设置position: absolute，margin：auto 平均分配margin
+
+弹性布局display: flex。设置align-items: center; justify-content: center
+```
+
+### BFC (Block Formatting Context)
+```
+BFC 也就是常说的块格式化上下文，这是一个独立的渲染区域，规定了内部如何布局，
+并且这个区域的子元素不会影响到外面的元素，其中比较重要的布局规则有内部box 垂
+直放置，计算BFC 的高度的时候，浮动元素也参与计算，触发BFC 的规则有根元素，
+浮动元素，position 为absolute 或fixed 的元素，display 为inline-block，table-cell，
+table-caption，flex，inline-flex，overflow 不为visible 的元素
+```
+
+### SASS
+```
+Sass is the most mature, stable, and powerful professional grade CSS extension language in the world.
+```
