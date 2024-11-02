@@ -77,12 +77,28 @@ my_element.addEventListener("click", function (e) {
 
 ### What did `new` do?
 ```
-new 操作符新建了一个空对象，这个对象原型指向构造函数的prototype，执行构造函数
-后返回这个对象。
+new 操作符新建了一个空对象，
+这个对象原型指向构造函数的prototype，
+执行构造函数后返回这个对象。
+
+// （1）首先创建了一个新的空对象
+// （2）设置原型，将对象的原型设置为函数的 prototype 对象。
+// （3）让函数的 this 指向这个对象，执行构造函数的代码（为这个新对象添加属性）
+// （4）判断函数的返回值类型，如果是值类型，返回创建的对象。如果是引用类型，就返回这个引用类型的对象。
+
 ```
 
 ### `this`
 ```
+this 是执行上下文中的一个属性，它指向最后一次调用这个方法的对象。
+1.第一种是函数调用模式，当一个函数不是一个对象的属性时，直接作为函数来调用时，this 指向全局对象。
+
+2.第二种是方法调用模式，如果一个函数作为一个对象的方法来调用时，this 指向这个对象。
+
+3.第三种是构造器调用模式，如果一个函数用 new 调用时，函数执行前会新创建一个对象，this 指向这个新创建的对象。
+
+4.第四种是 apply 、 call 和 bind 调用模式，这三个方法都可以显示的指定调用函数的 this 指向。
+
 The value of `this` depends on in which context it appears: function, class, or global.
 
 通过apply 和call 改变函数的this 指向，他们两个函数的第一个参数都是一样的表示要
@@ -109,17 +125,25 @@ obj.myLove.bind(obj1, "达州", "成都")(); // (注意前面有个调用)huang�
 
 ### 异步加载JS 的方法
 ```
-defer：defer 特性告诉浏览器不要等待脚本。相反，浏览器将继续处理 HTML，构建 DOM。
+1. defer：defer 特性告诉浏览器不要等待脚本。相反，浏览器将继续处理 HTML，构建 DOM。
 脚本会“在后台”下载，然后等 DOM 构建完成后，脚本才会执行。
 <script defer src="xxx"/>
 
 
-async: async 脚本会在后台加载，并在加载就绪时运行。DOM 和其他脚本不会等待它们，它们也不会等待其它的东西。
+2. async: async 脚本会在后台加载，并在加载就绪时运行。DOM 和其他脚本不会等待它们，它们也不会等待其它的东西。
 async 脚本就是一个会在加载完成时执行的完全独立的脚本。
 <script async src="https://google-analytics.com/analytics.js"></script>
 
 同时存在defer 和async，那么defer 的优先级比较高，脚本将在页面完成时执行。
 创建script 标签，插入到DOM 中
+
+3. 动态创建 DOM 方式
+const script = document.createElement('script')
+script.src = 'xxxx'
+ 
+4. 使用 setTimeout 延迟方法
+
+
 ```
 
 ### Js Garbage Collection
@@ -169,6 +193,10 @@ Starting from the roots, the garbage collector will thus find all reachable obje
 3. generational garbage collection (in V8 engine)
 新创建的对象被放置在新生代(Young Generation)中，如果这些对象能够长期存活，则被移动到老生代(Old Generation)。垃圾回收器会更加频繁地清理新生代中的对象，
 而老生代的对象因为生命周期较长，则不需要频繁清理。这种方式大大提高了垃圾回收的效率。
+
+生代采用了标记清除法和标记压缩法。标记清除法首先会对内存中存活的对象进行标记，标记结束后清除掉那些没有标记的对象。
+由于标记清除后会造成很多的内存碎片，不便于后面的内存分配。所以了解决内存碎片的问题引入了标记压缩法。
+
 ```
 
 ### eval 是做什么的
@@ -188,7 +216,7 @@ console.log(eval('2 + 2') === eval(new String('2 + 2')));
 // Expected output: false
 ```
 
-### CommonJs, AMD (Asynchronous Module Definition), ES6
+### CommonJs, AMD (Asynchronous Module Definition), CMD(Common Module Definition),  ES6
 ```
 commonjs:
 
@@ -202,11 +230,15 @@ modules.exports = customerStore;
 
 AMD:
 AMD was born as CommonJS wasn’t suited for the browsers early on. As the name implies, it supports asynchronous module loading.
+Used require.js to achieven
 
 define(['module1', ',module2'], function(module1, module2) {
   console.log(module1.setName());
 });
 The function is called only when the requested modules are finished loading. 
+
+CMD:
+它与 AMD（Asynchronous Module Definition）类似，但在模块加载和执行时有不同的理念。
 
 
 ES6:
@@ -585,4 +617,122 @@ JavaScript 的 Proxy 对象 是 ECMAScript 6（ES6）引入的一项强大特性
 
 const proxy = new Proxy(target, handler);
 
+```
+
+### Js stack vs heap
+```
+栈：原始数据类型（Undefined、Null、Boolean、Number、String）
+堆：引用数据类型（对象、数组和函数）
+
+堆和栈的概念存在于数据结构中和操作系统内存中。
+
+在数据结构中，栈中数据的存取方式为先进后出。而堆是一个优先队列，是按优先级来进行排序的，优先级可以按照大小来规定。完全
+二叉树是堆的一种实现方式。
+
+在操作系统中，内存被分为栈区和堆区。
+
+栈区内存由编译器自动分配释放，存放函数的参数值，局部变量的值等。其操作方式类似于数据结构中的栈。
+
+堆区内存一般由程序员分配释放，若程序员不释放，程序结束时可能由垃圾回收机制回收。
+```
+
+###  内部属性 [[Class]] 是什么？
+```
+所有 typeof 返回值为 "object" 的对象（如数组）都包含一个内部属性 [[Class]]（我们可以把它看作一个内部的分类，而非
+传统的面向对象意义上的类）。这个属性无法直接访问，一般通过 Object.prototype.toString(..) 来查看。例如：
+
+Object.prototype.toString.call( [1,2,3] );
+// "[object Array]"
+
+Object.prototype.toString.call( /regex-literal/i );
+// "[object RegExp]"
+```
+
+### 如何判断一个对象是否属于某个类？
+```
+第一种方式是使用 A instanceof B 运算符来判断B构造函数的 prototype 属性是否出现在A对象的原型链中的任何位置。
+
+第二种方式，如果需要判断的是某个内置的引用类型的话，可以使用 Object.prototype.toString() 方法来打印对象的
+[[Class]] 属性来进行判断。
+
+```
+
+
+### Ajax 是什么? 
+```
+2005 年 2 月，AJAX 这个词第一次正式提出，它是 Asynchronous JavaScript and XML 的缩写，
+指的是通过 JavaScript 的 异步通信，从服务器获取 XML 文档从中提取数据，再更新当前网页的对应部分，而不用刷新整个网页。
+
+具体来说，AJAX 包括以下几个步骤。
+
+1.创建 XMLHttpRequest 对象，也就是创建一个异步调用对象
+2.创建一个新的 HTTP 请求，并指定该 HTTP 请求的方法、URL 及验证信息
+3.设置响应 HTTP 请求状态变化的函数
+4.发送 HTTP 请求
+5.获取异步调用返回的数据
+6.使用 JavaScript 和 DOM 实现局部刷新
+
+```
+
+###  如何判断当前脚本运行在浏览器还是 node 环境中？（阿里）
+```
+this === window ? 'browser' : 'node';
+
+通过判断 Global 对象是否为 window，如果不为 window，当前脚本没有运行在浏览器中。
+```
+
+### 什么是“前端路由”？
+```
+（1）什么是前端路由？
+
+前端路由就是把不同路由对应不同的内容或页面的任务交给前端来做，之前是通过服务端根据 url 的不同返回不同的页面实现的。
+
+（2）什么时候使用前端路由？
+
+在单页面应用，大部分页面结构不变，只改变部分内容的使用
+
+（3）前端路由有什么优点和缺点？
+
+优点：用户体验好，不需要每次都从服务器全部获取，快速展现给用户
+
+缺点：单页面无法记住之前滚动的位置，无法在前进，后退的时候记住滚动的位置
+
+前端路由一共有两种实现方式，一种是通过 hash 的方式，一种是通过使用 pushState 的方式。
+```
+
+###  如何判断一个对象是否为空对象？
+```
+Object.keys(obj).length === 0
+```
+
+### Difference for output
+```
+for(var i=0;i<5;i++){ 
+  setTimeout(function(){ console.log(i); },1000); 
+} 
+
+console.log(i)
+
+// Output: 5 5 5 5 5
+
+let i;
+for (i = 0; i < 5; i++) {
+  setTimeout(function() {
+    console.log(i);
+  }, 1000);
+}
+console.log(i); // 5
+
+//Output: 0 1 2 3 4
+
+Or use closure:
+for (var i = 0; i < 5; i++) {
+  (function(i) {
+    setTimeout(function() {
+      console.log(i);
+    }, i * 1000);
+  })(i);
+}
+
+// Output: 0 1 2 3 4
 ```
