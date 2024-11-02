@@ -567,3 +567,22 @@ const obj = {
 console.log(obj[mySymbol]); // 输出：value
 ```
 
+### Babel
+```
+Babel 是一个工具链，主要用于将采用 ECMAScript 2015+ 语法编写的代码转换为向后兼容的 JavaScript 语法，
+以便能够运行在当前和旧版本的浏览器或其他环境中。下面列出的是 Babel 能为你做的事情：
+
+- 语法转换: 将最新的 JavaScript 语法转换为旧版本兼容的语法。
+- Polyfill: 通过 Polyfill 方式在目标环境中添加缺失的功能（通过引入第三方 polyfill 模块，例如 core-js）
+- 源码转换（codemods）:对源代码进行批量修改或重构 => 开发者可以高效地对大型代码库进行批量修改，提升开发效率，减少人为错误。
+ (for example, want to change all `var` to `let`)
+```
+
+### Js proxy 
+```
+JavaScript 的 Proxy 对象 是 ECMAScript 6（ES6）引入的一项强大特性，
+允许开发者创建一个代理对象来拦截并自定义对另一个对象的基本操作，如属性访问、赋值、枚举、函数调用等。
+
+const proxy = new Proxy(target, handler);
+
+```
