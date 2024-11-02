@@ -181,6 +181,22 @@ localStorage：localStorage 在所有同源窗口中都是共享的；cookie 也
 样，使用起来非常方便定制页面。如果网站提供了换肤或更换布局的功能，那么可以使
 用cookie 来记录用户的选项，例如：背景色、分辨率等。当用户下次访问时，仍然可以
 保存上一次访问的界面风格。
+
+存储大小：
+  cookie 数据大小不能超过4 k 。
+  sessionStorage 和 localStorage 虽然也有存储大小的限制，但比 cookie 大得多，可以达到 5M 或更大。
+
+有期时间：
+  localStorage    存储持久数据，浏览器关闭后数据不丢失除非主动删除数据。
+  sessionStorage  数据在页面会话结束时会被清除。页面会话在浏览器打开期间一直保持，并且重新加载或恢复页面仍会
+                    保持原来的页面会话。在新标签或窗口打开一个页面时会在顶级浏览上下文中初始化一个新的会话。
+  cookie          设置的 cookie 过期时间之前一直有效，即使窗口或浏览器关闭。
+
+作用域：
+    sessionStorage  只在同源的同窗口（或标签页）中共享数据，也就是只在当前会话中共享。
+    localStorage    在所有同源窗口中都是共享的。
+    cookie          在所有同源窗口中都是共享的。
+
 ```
 
 ### Q: Web Worker
@@ -461,4 +477,99 @@ script 脚本请求都不会有跨域的限制，这是因为这些操作都不�
 节流： 在连续触发事件时，保证在指定时间间隔内至少执行一次函数。
 防抖： 在连续触发事件时，只有在事件停止触发后的指定时间内才执行函数。
 
+```
+
+### What's browser?
+```
+简单来说浏览器可以分为两部分，shell 和 内核。
+
+其中 shell 的种类相对比较多，内核则比较少。shell 是指浏览器的外壳：例如菜单，工具栏等。主要是提供给用户界面操作，
+参数设置等等。它是调用内核来实现各种功能的。内核才是浏览器的核心。内核是基于标记语言显示内容的程序或模块。也有一些
+浏览器并不区分外壳和内核。从 Mozilla 将 Gecko 独立出来后，才有了外壳和内核的明确划分。
+
+shell + rendering engine + js engine 
+
+* 用户界面
+  * 主进程
+  * 内核
+      * 渲染引擎
+      * JS 引擎
+          * 执行栈
+      * 事件触发线程
+          * 消息队列
+              * 微任务
+              * 宏任务
+      * 网络异步线程
+      * 定时器线程
+
+```
+
+### 浏览器内核(core)的理解？
+```
+主要分成两部分：渲染引擎(Rendering Engine)和 JS引擎(V8)。
+
+渲染引擎的职责就是渲染，即在浏览器窗口中显示所请求的内容。
+默认情况下，渲染引擎可以显示 html、xml 文档及图片，它也可以借助插件（一种浏览器扩展）显示其他类型数据，
+例如使用 PDF 阅读器插件，可以显示 PDF 格式。
+Google Chrome：使用 Blink 内核。
+Mozilla Firefox：使用 Gecko 内核。
+Apple Safari：使用 WebKit 内核。
+Microsoft Edge：早期版本使用 EdgeHTML 内核，后续版本转为使用 Blink 内核。
+Opera：早期版本使用自研的 Presto 内核，后转为使用 Blink 内核。
+
+
+JS 引擎：解析和执行 javascript 来实现网页的动态效果。
+avaScript 引擎是用于解析和执行 JavaScript 代码的程序或解释器，通常嵌入在浏览器中，也可用于其他运行环境。它们将 JavaScript 源代码转换为机器码，以便计算机能够执行。
+
+主要 JavaScript 引擎：
+V8：V8 是 Google Chrome 和 Node.js 的 JavaScript 引擎。 
+NODE.JS 中文网
+SpiderMonkey：由 Mozilla 开发，是第一个 JavaScript 引擎，最初用于 Netscape Navigator 浏览器，现在用于 Firefox 浏览器。
+JavaScriptCore（Nitro）：由 Apple 开发，用于 Safari 浏览器。
+Chakra：由微软开发，最初用于 Internet Explorer 浏览器，后续版本用于 Microsoft Edge 浏览器。
+Hermes：由 Facebook 开发，专为 React Native 优化的 JavaScript 引擎，旨在提高移动应用的性能。
+
+
+最开始渲染引擎和 JS 引擎并没有区分的很明确，后来 JS 引擎越来越独立，内核就倾向于只指渲染引擎。
+```
+
+
+###  前端需要注意哪些 SEO ？
+```
+（1）合理的 title、description、keywords：搜索对这三项的权重逐个减小，title 值强调重点即可，重要关键词出现不要超
+  过2次，而且要靠前，不同页面 title 要有所不同；description 把页面内容高度概括，长度合适，不可过分堆砌关键词，不
+  同页面 description 有所不同；keywords 列举出重要关键词即可。
+
+（2）语义化的 HTML 代码，符合 W3C 规范：语义化代码让搜索引擎容易理解网页。
+
+（3）重要内容 HTML 代码放在最前：搜索引擎抓取 HTML 顺序是从上到下，有的搜索引擎对抓取长度有限制，保证重要内容肯定被
+  抓取。
+
+（4）重要内容不要用 js 输出：爬虫不会执行 js 获取内容
+
+（5）少用 iframe：搜索引擎不会抓取 iframe 中的内容
+
+（6）非装饰性图片必须加 alt
+
+（7）提高网站速度：网站速度是搜索引擎排序的一个重要指标
+```
+
+
+### 如何实现浏览器内多个标签页之间的通信?
+```
+（1）使用 WebSocket，通信的标签页连接同一个服务器，发送消息到服务器后，服务器推送消息给所有连接的客户端。
+
+（2）使用 SharedWorker （只在 chrome 浏览器实现了），两个页面共享同一个线程，通过向线程发送数据和接收数据来实现标
+  签页之间的双向通行。
+
+（3）可以调用 localStorage、cookies 等本地存储方式，localStorge 另一个浏览上下文里被添加、修改或删除时，它都会触
+  发一个 storage 事件，我们通过监听 storage 事件，控制它的值来进行页面信息通信；
+
+（4）如果我们能够获得对应标签页的引用，通过 postMessage 方法也是可以实现多个标签页通信的。
+```
+
+### Chrome waterfall
+```
+In web development, the Waterfall view in Chrome's Developer Tools is a crucial feature for analyzing the performance of network requests. 
+此时可以使用Chrome提供的开发者工具在前端页面上具体看到具体那里花费时间，方便定位问题。
 ```
