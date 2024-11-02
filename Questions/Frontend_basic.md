@@ -85,6 +85,14 @@ navigator.cookieEnabled -- 返回浏览器是否支持(启用)cookie
 
 ```
 
+### Q: Virtual dom
+```
+用JavaScript 对象结构表示DOM 树的结构；然后用这个树构建一个真正的DOM 树，
+插到文档当中当状态变更的时候，重新构造一棵新的对象树。然后用新的树和旧的树
+进行比较，记录两棵树差异把所记录的差异应用到所构建的真正的DOM 树上，视图就
+更新了。Virtual DOM 本质上就是在JS 和DOM 之间做了一个缓存。
+```
+
 ### Q: HTTP Status Code
 ```
 100 Continue 继续。客户端应继续其请求

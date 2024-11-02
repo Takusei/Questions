@@ -24,6 +24,9 @@ Use promise, generator, async/await to solve
 
 ### Promise
 ```
+一个promise 可能有三种状态：等待（pending）、已完成（resolved，又称fulfilled）、
+已拒绝（rejected）。
+
 Promise.all、Promise.race、Promise.any的区别
 all： 成功的时候返回的是一个结果数组，而失败的时候则返回最先被reject失败状态的值。
 The Promise.all() static method takes an iterable of promises as input and returns a single Promise. 
@@ -33,6 +36,21 @@ with an array of the fulfillment values. It rejects when any of the input's prom
 race： 哪个结果获得的快，就返回那个结果，不管结果本身是成功状态还是失败状态。
 any： 返回最快的成功结果，如果全部失败就返回失败结果。
 
+
+const myFirstPromise = new Promise((resolve, reject) => {
+  // 当异步操作成功时，我们调用 resolve(...)，当其失败时，调用 reject(...)。
+  // 在这个例子中，我们使用 setTimeout(...) 来模拟异步代码。
+  // 在实际情况中，你可能会使用类似 XHR 或 HTML API 等。
+  setTimeout(() => {
+    resolve("成功！"); // 耶！一切顺利！
+  }, 250);
+});
+
+myFirstPromise.then((successMessage) => {
+  // successMessage 是我们在上面的 resolve(...) 函数中传入的任何内容。
+  // 它不一定是字符串，但如果它只是一个成功的消息，那么它大概率是字符串。
+  console.log(`耶！${successMessage}`);
+});
 
 ```
 
@@ -147,6 +165,10 @@ In JavaScript, the root is the global object.
 Periodically, the garbage collector will start from these roots, find all objects that are referenced from these roots, 
 then all objects referenced from these, etc. 
 Starting from the roots, the garbage collector will thus find all reachable objects and collect all non-reachable objects.
+
+3. generational garbage collection (in V8 engine)
+新创建的对象被放置在新生代(Young Generation)中，如果这些对象能够长期存活，则被移动到老生代(Old Generation)。垃圾回收器会更加频繁地清理新生代中的对象，
+而老生代的对象因为生命周期较长，则不需要频繁清理。这种方式大大提高了垃圾回收的效率。
 ```
 
 ### eval 是做什么的
@@ -261,6 +283,13 @@ console.log(person.#name);     // 语法错误，无法直接访问私有字段
 
 ### ==和===、以及Object.is 的区别
 ```
+console.log(undefined == null); // Outputs: true
+
+console.log(undefined === null); // Outputs: false
+
+console.log(typeof undefined); // Outputs: "undefined"
+console.log(typeof null);      // Outputs: "object"
+
 Object.is 主要的区别就是+0！=-0 而NaN==NaN
 ```
 
@@ -278,7 +307,7 @@ setTimeout：使用 clearTimeout(timeoutId) 取消。
 setInterval：使用 clearInterval(intervalId) 取消。
 
 ```
-### Js 是单线程的，那么它是怎么处理异步操作的？
+### Js 是单线程的，那么它是怎么处理异步操作的？Eventloop
 ```
 JavaScript 是一门单线程语言，即在同一时间只能执行一个任务。然而，它通过事件循环（Event Loop）机制有效地处理异步操作，如网络请求、定时器和用户交互等，从而避免阻塞主线程。
 
@@ -398,3 +427,143 @@ CORS：适用于后端可配置响应头的场景，支持多种请求方法。 
 
 服务器端设置跨域头：适用于后端代码可修改的项目。
 ```
+
+### Webpack
+```
+Webpack 是一个用于现代 JavaScript 应用程序的静态模块打包工具。
+它的主要功能是将项目中的各种资源（如 JavaScript、CSS、图片等）视为模块，构建一个依赖图，
+然后将这些模块打包成一个或多个bundle，以供浏览器使用。
+
+how to reduce bundle size?
+1. 启用生产模式（Production Mode）： 确保在生产环境中使用 Webpack 的生产模式，它会自动进行代码压缩和优化。
+webpack --mode production
+
+2. 代码分割（Code Splitting）： 将代码拆分为更小的块，实现按需加载，减少初始加载时间。可以在 Webpack 配置中使用 SplitChunksPlugin
+module.exports = {
+  // ...
+  optimization: {
+    splitChunks: {
+      chunks: 'all',
+    },
+  },
+};
+
+3. 分析打包内容： 使用如 Webpack Bundle Analyzer 等工具，可视化并了解打包内容，识别需要优化或移除的大型模块或依赖。
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+
+module.exports = {
+  // ...
+  plugins: [
+    new BundleAnalyzerPlugin(),
+  ],
+};
+
+```
+
+### JS 中继承实现的几种方式
+```
+1. 原型链继承
+
+每个 JavaScript 对象都有一个内部链接，称为 [[Prototype]]，指向另一个对象。当访问对象的属性或方法时，JavaScript 会沿着原型链向上查找，
+直到找到相应的属性或方法，或到达原型链的顶端（即 null）。
+
+function Animal(name) {
+  this.name = name;
+}
+
+Animal.prototype.eat = function() {
+  console.log(this.name + ' is eating.');
+};
+
+function Dog(name, breed) {
+  Animal.call(this, name); // 调用父类构造函数
+  this.breed = breed;
+}
+
+Dog.prototype = Object.create(Animal.prototype); // 设置原型链
+Dog.prototype.constructor = Dog; // 修正构造函数指向
+
+Dog.prototype.bark = function() {
+  console.log(this.name + ' is barking.');
+};
+
+const dog = new Dog('Buddy', 'Labrador');
+dog.eat();  // 输出：Buddy is eating.
+dog.bark(); // 输出：Buddy is barking.
+
+2. ES6 类继承
+
+ES6 引入了 class 语法，使继承的实现更加直观。class 语法是基于原型的语法糖，底层机制仍然是原型链继承。
+
+class Animal {
+  constructor(name) {
+    this.name = name;
+  }
+
+  eat() {
+    console.log(this.name + ' is eating.');
+  }
+}
+
+class Dog extends Animal {
+  constructor(name, breed) {
+    super(name); // 调用父类构造函数
+    this.breed = breed;
+  }
+
+  bark() {
+    console.log(this.name + ' is barking.');
+  }
+}
+
+const dog = new Dog('Buddy', 'Labrador');
+dog.eat();  // 输出：Buddy is eating.
+dog.bark(); // 输出：Buddy is barking.
+```
+
+### JS 原型链
+```
+在 JavaScript 中，原型链是实现对象继承的核心机制。每个对象都有一个内部属性 [[Prototype]]，指向另一个对象，即其原型。当访问对象的某个属性或方法时，JavaScript 会首先在该对象自身查找；如果未找到，则沿着原型链向上查找，直到找到该属性或方法，或到达原型链的顶端（即 null）
+
+Object.getPrototypeOf()
+
+```
+
+### let, var, const
+```
+提起这三个最明显的区别是var 声明的变量是全局或者整个函数块的，而let,const 声明
+的变量是块级的变量，
+
+var 声明的变量存在变量提升(hoisting)，let,const 不存在，
+console.log(a); // 输出：undefined
+var a = 5;
+
+console.log(b); // 报错：b 未定义
+let b = 10;
+
+let 声明的变量允许重新赋值，const 不允许。
+```
+### ES6 箭头函数的特性
+```
+箭头函数与普通函数的区别在于：
+1、箭头函数没有this，所以需要通过查找作用域链来确定this 的值，这就意味着如果箭
+头函数被非箭头函数包含，this 绑定的就是最近一层非箭头函数的this，
+2、箭头函数没有自己的arguments 对象，但是可以访问外围函数的arguments 对象
+3、不能通过new 关键字调用，同样也没有new.target 值和原型
+```
+
+### Js symbol
+```
+在 JavaScript 中，Symbol 是一种独特且不可变的基本数据类型，主要用于为对象添加唯一的属性键，避免属性名冲突。
+
+const sym1 = Symbol('desc');
+const sym2 = Symbol('desc');
+console.log(sym1 === sym2); // 输出：false
+
+const mySymbol = Symbol('uniqueKey');
+const obj = {
+  [mySymbol]: 'value'
+};
+console.log(obj[mySymbol]); // 输出：value
+```
+
