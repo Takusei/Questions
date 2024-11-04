@@ -73,6 +73,34 @@ calc():
 }
 ```
 
+### : vs ::
+```
+Pseudo-classes (:) Pseudo-classes are keywords added to selectors that specify a special state of the selected elements.
+  :hover: Styles an element when the user hovers over it.
+  :first-child: Selects an element that is the first child of its parent.
+  :nth-child(n): Selects elements based on their position in a group of siblings
+
+Pseudo-elements (::) Pseudo-elements are used to style specific parts of an element's content.
+  ::before: Inserts content before the content of an element.
+  ::after: Inserts content after the content of an element.
+  ::first-line: Styles the first line of an element's content.
+  ::first-letter: Styles the first letter of an element's content.
+
+```
+
+### CSS 中哪些属性可以继承？
+```
+每一个属性在定义中都给出了这个属性是否具有继承性，一个具有继承性的属性会在没有指定值的时候，
+会使用父元素的同属性的值来作为自己的值。
+
+一般具有继承性的属性有，字体相关的属性，font-size和font-weight等。
+文本相关的属性，color和text-align等。
+表格的一些布局属性、列表属性如list-style等。还有光标属性cursor、元素可见性visibility。
+
+当一个属性不是继承属性的时候，我们也可以通过将它的值设置为inherit来使它从父元素那获取同名的属性值来继承。
+```
+
+
 ## CSS Layout
 
 ### 正常布局流
@@ -311,4 +339,41 @@ table-caption，flex，inline-flex，overflow 不为visible 的元素
 ### SASS
 ```
 Sass is the most mature, stable, and powerful professional grade CSS extension language in the world.
+```
+
+### CSS 多列等高如何实现？
+```
+利用flex布局中弹性元素align-items属性默认为stretch，如果弹性元素未设置高度或设为auto，
+将占满整个容器的高度的特性，来实现多列等高。
+```
+
+### width:auto 和 width:100%的区别
+```
+width:100%会使元素box的宽度等于父元素的content box的宽度。
+
+width:auto会使元素撑满整个父元素，margin、border、padding、content区域会自动分配水平空间。
+```
+
+### display、position和float的相互关系？
+```
+总的来说，可以把它看作是一个类似优先级的机制，"position:absolute"和"position:fixed"优先级最高，有它存在
+的时候，浮动不起作用，'display'的值也需要调整；其次，元素的'float'特性的值不是"none"的时候或者它是根元素
+的时候，调整'display'的值；最后，非根元素，并且非浮动元素，并且非绝对定位的元素，'display'特性值同设置值。
+```
+
+### 常见的元素隐藏方式？
+```
+-（1）使用 display:none;隐藏元素，渲染树不会包含该渲染对象，因此该元素不会在页面中占据位置，也不会响应绑定的监听事件。
+
+-（2）使用 visibility:hidden;隐藏元素。元素在页面中仍占据空间，但是不会响应绑定的监听事件。
+
+-（3）使用 opacity:0;将元素的不透明度设置为 0，以此来实现元素的隐藏。元素在页面中仍然占据空间，并且能够响应元素绑定的监听事件。
+
+-（4）通过使用绝对定位将元素移除可视区域内，以此来实现元素的隐藏。
+
+-（5）通过 z-index 负值，来使其他元素遮盖住该元素，以此来实现隐藏。
+
+-（6）通过 clip/clip-path 元素裁剪的方法来实现元素的隐藏，这种方法下，元素仍在页面中占据位置，但是不会响应绑定的监听事件。
+
+-（7）通过 transform:scale(0,0)来将元素缩放为 0，以此来实现元素的隐藏。这种方法下，元素仍在页面中占据位置，但是不会响应绑定的监听事件。
 ```
