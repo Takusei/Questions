@@ -573,3 +573,23 @@ Hermes：由 Facebook 开发，专为 React Native 优化的 JavaScript 引擎�
 In web development, the Waterfall view in Chrome's Developer Tools is a crucial feature for analyzing the performance of network requests. 
 此时可以使用Chrome提供的开发者工具在前端页面上具体看到具体那里花费时间，方便定位问题。
 ```
+
+### web vital
+```
+Web Vitals is an initiative by Google that provides unified guidance for quality signals 
+essential to delivering a great user experience on the web. 
+
+1. Largest Contentful Paint (LCP):
+   Measures loading performance. To provide a good user experience, LCP should occur within 2.5 seconds of when the page first starts loading.
+
+2. Interaction to Next Paint (INP): 
+  Measures responsiveness. To provide a good user experience, pages should have an INP of 200 milliseconds or less.
+
+3. Cumulative Layout Shift (CLS): 
+  Measures visual stability. To provide a good user experience, pages should maintain a CLS of 0.1 or less.
+
+
+To measure and report these metrics, developers can use various tools and libraries. 
+For instance, the `web-vitals` JavaScript library is a small, production-ready wrapper around the underlying web APIs that measures each metric 
+in a way that accurately matches how they're reported by all the Google tools.
+```

@@ -363,6 +363,24 @@ JavaScript 是一门单线程语言，即在同一时间只能执行一个任务
 同步代码直接在调用栈中执行。
 异步操作由 Web APIs 处理，完成后将回调函数放入相应的任务队列。
 事件循环首先检查调用栈是否为空，若为空，则依次处理微任务队列中的所有任务，然后再处理宏任务队列中的第一个任务。
+
+How the Event Loop Works:
+
+When JavaScript code runs, synchronous tasks are executed directly on the call stack.
+
+Asynchronous tasks (e.g., setTimeout, Promises, I/O operations) are offloaded to the browser's Web APIs or Node.js APIs. 
+Once these tasks complete, their callbacks are placed into the task queue.
+
+The event loop checks the call stack. If it's empty, it takes the first callback from the task queue and 
+pushes it onto the call stack for execution.
+
+Microtasks and Macrotasks:
+
+Tasks in JavaScript are categorized into microtasks and macrotasks, each with its own queue:
+
+  Macrotasks: Include events like setTimeout, setInterval, and I/O operations.
+
+  Microtasks: Include Promises' .then() handlers and process.nextTick() in Node.js.
 ```
 
 ### Promise 代码的执行顺序
@@ -735,4 +753,19 @@ for (var i = 0; i < 5; i++) {
 }
 
 // Output: 0 1 2 3 4
+```
+
+### What structure is an object made of in Javascript?
+```
+an object is a collection of key-value pairs where keys are strings or symbols, 
+and values can be any data type, including other objects.
+
+Properties
+  Data Properties: These are key-value pairs where the key is a string or symbol, and the value is any valid JavaScript data type.
+
+  Accessor Properties: These are properties defined by getter and setter functions instead of a value. 
+
+Prototype Chain:
+  ach object has an internal link to another object called its prototype. 
+
 ```
