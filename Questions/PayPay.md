@@ -443,7 +443,7 @@ Asyns Loading
 Error handling
 ```
 
-#### What's the difference of async and defer in <script>, Why and when do we use them
+#### What's the difference of async and defer in script, Why and when do we use them
 ```
 Apply async to scripts that can operate independently of other scripts and the DOM. Examples include third-party analytics tools or advertisements that do not interact with the page's content.
 
